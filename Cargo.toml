@@ -1,0 +1,19 @@
+[workspace]
+members = ["./crates/*"]
+resolver = "2"
+
+[workspace.package]
+edition = "2021"
+
+[workspace.dependencies]
+#前端
+gloo = "0.10.0"
+yew = { version = "0.20.0", features = ["csr"] }
+#后端
+actix-web = "4.4.0"
+actix-files = "0.6.2"
+sqlx = { version = "0.7.1", features = [
+    "runtime-tokio",
+    "tls-rustls",
+    "postgres",
+] }

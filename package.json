@@ -1,0 +1,19 @@
+{
+    "name": "beigua.webapp",
+    "version": "0.1.0",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "install": "cargo install trunk",
+        "start": "npm run build && npm run run",
+        "build": "trunk build & cargo build -p backend && node ./scripts/build.js",
+        "run": "node ./scripts/run.js",
+        "clean": "node ./scripts/clean.js",
+        "release": "trunk build --release & cargo build --release -p backend && node ./scripts/build.js"
+    },
+    "devDependencies": {
+        "eslint": "^8.50.0",
+        "execa": "^8.0.1",
+        "fs-extra": "^11.1.1"
+    }
+}
