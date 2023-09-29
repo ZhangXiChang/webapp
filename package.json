@@ -7,9 +7,9 @@
         "install": "cargo install trunk",
         "start": "npm run build && npm run run",
         "build": "trunk build & cargo build -p backend && node ./scripts/build.js",
+        "release": "trunk build --release & cargo build --release -p backend && node ./scripts/build.js",
         "run": "node ./scripts/run.js",
-        "clean": "node ./scripts/clean.js",
-        "release": "trunk build --release & cargo build --release -p backend && node ./scripts/build.js"
+        "clean": "node ./scripts/clean.js"
     },
     "devDependencies": {
         "eslint": "^8.50.0",
