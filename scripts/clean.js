@@ -8,8 +8,8 @@ async function clean() {
         console.log('Clean page assets successfully!')
         fs.remove('./target')
         console.log('Cleared compile cache successfully!')
-    } catch (err) {
-        console.error(err)
+    } catch (error) {
+        console.error(error)
     }
 }
 console.log('Cleaning up the build...')

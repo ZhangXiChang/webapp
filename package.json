@@ -4,7 +4,7 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "install": "cargo install trunk",
+        "install": "cargo install trunk && rustup target add wasm32-unknown-unknown",
         "start": "npm run build && npm run run",
         "build": "trunk build & cargo build -p backend && node ./scripts/build.js",
         "run": "node ./scripts/run.js",
