@@ -7,9 +7,9 @@
         "install": "cargo install trunk",
         "start": "npm run build && npm run run",
         "build": "trunk build & cargo build -p backend && node ./scripts/build.js",
-        "release": "trunk build --release & cargo build --release -p backend && node ./scripts/build.js --release",
         "run": "node ./scripts/run.js",
-        "clean": "node ./scripts/clean.js"
+        "clean": "node ./scripts/clean.js",
+        "release": "trunk build --release & cargo build --release -p backend && node ./scripts/build.js --release"
     },
     "devDependencies": {
         "arg": "^5.0.2",
