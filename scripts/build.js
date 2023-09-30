@@ -1,4 +1,9 @@
 import fs from 'fs-extra'
+import arg from 'arg'
+
+const args = arg({
+    '--release': Boolean
+})
 
 async function build() {
     try {
@@ -6,8 +11,13 @@ async function build() {
         console.log('Clean up old resources successful!')
         fs.copy('./dist', './service/dist')
         console.log('Copy page resource successfully!')
-        fs.copy('./target/debug/backend.exe', './service/backend.exe')
-        console.log('Copy server file successfully!')
+        if (args['--release']) {
+            fs.copy('./target/release/backend.exe', './service/backend.exe')
+            console.log('Copy the release server file successfully!')
+        } else {
+            fs.copy('./target/debug/backend.exe', './service/backend.exe')
+            console.log('Copy debug build server files successfully!')
+        }
     } catch (err) {
         console.error(err)
     }

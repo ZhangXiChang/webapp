@@ -28,14 +28,15 @@ impl yew::Component for RootLayout {
     fn view(&self, _: &Context<Self>) -> Html {
         html! {
             <>
-                <div class="container mx-auto max-w-full rounded bg-white py-3 shadow-md shadow-gray-200">
-                    <div class="mx-96 rounded bg-gray-100 py-5">
-                        <form></form>
-                    </div>
-                    <div class="mx-96 rounded bg-gray-950 py-5">
-                        <form></form>
+            <div class="p-4">
+                <div class="relative mx-auto flex max-w-full items-center rounded-md shadow-md">
+                    <img class="absolute -left-3 h-24 w-24 rounded-full shadow-2xl"
+                        src="http://q.qlogo.cn/headimg_dl?dst_uin=3066907854&spec=640&img_type=jpg" />
+                    <div class="flex flex-row space-x-1 py-5 pl-24">
+                        <span class="text-2xl font-black text-violet-400">{"暴虐仙女的个人小站"}</span>
                     </div>
                 </div>
+            </div>
             </>
         }
     }
