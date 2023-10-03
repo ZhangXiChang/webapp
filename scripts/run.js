@@ -1,22 +1,22 @@
 import { $ } from 'execa'
 import os from 'os'
 
-async function exec() {
-    try {
-        switch (os.type()) {
-            case 'Windows_NT': {
-                let stdout = await $`./service/backend.exe`.pipeStdout(process.stdout)
-                console.log(stdout)
-                break;
-            }
-            case 'Linux': {
-                let stdout = await $`./service/backend`.pipeStdout(process.stdout)
-                console.log(stdout)
-                break;
-            }
+const $$ = $({ stdio: 'inherit' })
+
+function main() {
+    switch (os.type()) {
+        case 'Linux': {
+            Promise.all([
+                $$`./service/backend`,
+            ])
+            break
         }
-    } catch (error) {
-        console.error(error)
+        case 'Windows_NT': {
+            Promise.all([
+                $$`./service/backend.exe`,
+            ])
+            break
+        }
     }
 }
-exec()
+main()

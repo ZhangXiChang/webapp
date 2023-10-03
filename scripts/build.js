@@ -1,43 +1,59 @@
+import { $ } from 'execa'
 import fs from 'fs-extra'
 import arg from 'arg'
 import os from 'os'
 
+const $$ = $({ stdio: 'inherit' })
 const args = arg({
     '--release': Boolean
 })
 
-async function build() {
-    try {
-        await fs.remove('./service')
-        console.log('Clean up old resources successful!')
-        fs.copy('./dist', './service/dist')
-        console.log('Copy page resource successfully!')
+function main() {
+    let funs
+    if (args['--release']) {
+        funs = Promise.all([
+            fs.remove('./service'),
+            $$`trunk build --release`,
+            $$`cargo build -p backend --release`,
+        ])
+    } else {
+        funs = Promise.all([
+            fs.remove('./service'),
+            $$`trunk build`,
+            $$`cargo build -p backend`,
+        ])
+    }
+    funs.then(() => {
         switch (os.type()) {
-            case 'Windows_NT': {
-                if (args['--release']) {
-                    fs.copy('./target/release/backend.exe', './service/backend.exe')
-                    console.log('Copy the release server file successfully!')
-                } else {
-                    fs.copy('./target/debug/backend.exe', './service/backend.exe')
-                    console.log('Copy debug build server files successfully!')
-                }
-                break;
-            }
             case 'Linux': {
                 if (args['--release']) {
-                    fs.copy('./target/release/backend', './service/backend')
-                    console.log('Copy the release server file successfully!')
+                    Promise.all([
+                        fs.copy('./dist', './service/dist'),
+                        fs.copy('./target/release/backend', './service/backend'),
+                    ])
                 } else {
-                    fs.copy('./target/debug/backend', './service/backend')
-                    console.log('Copy debug build server files successfully!')
+                    Promise.all([
+                        fs.copy('./dist', './service/dist'),
+                        fs.copy('./target/debug/backend', './service/backend'),
+                    ])
                 }
-                break;
+                break
+            }
+            case 'Windows_NT': {
+                if (args['--release']) {
+                    Promise.all([
+                        fs.copy('./dist', './service/dist'),
+                        fs.copy('./target/release/backend.exe', './service/backend'),
+                    ])
+                } else {
+                    Promise.all([
+                        fs.copy('./dist', './service/dist'),
+                        fs.copy('./target/debug/backend.exe', './service/backend'),
+                    ])
+                }
+                break
             }
         }
-    } catch (err) {
-        console.error(err)
-    }
+    })
 }
-console.log('Building a directory...')
-build()
-console.log('Build directory successfully!')
+main()
