@@ -43,12 +43,12 @@ function main() {
                 if (args['--release']) {
                     Promise.all([
                         fs.copy('./dist', './service/dist'),
-                        fs.copy('./target/release/backend.exe', './service/backend'),
+                        fs.copy('./target/release/backend.exe', './service/backend.exe'),
                     ])
                 } else {
                     Promise.all([
                         fs.copy('./dist', './service/dist'),
-                        fs.copy('./target/debug/backend.exe', './service/backend'),
+                        fs.copy('./target/debug/backend.exe', './service/backend.exe'),
                     ])
                 }
                 break
