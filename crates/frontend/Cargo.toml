@@ -6,3 +6,4 @@ edition.workspace = true
 [dependencies]
 gloo.workspace = true
 yew.workspace = true
+wasm-bindgen-futures.workspace = true

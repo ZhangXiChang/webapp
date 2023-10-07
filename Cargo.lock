@@ -685,6 +685,7 @@ name = "frontend"
 version = "0.1.0"
 dependencies = [
  "gloo 0.10.0",
+ "wasm-bindgen-futures",
  "yew",
 ]
 
