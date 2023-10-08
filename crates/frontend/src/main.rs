@@ -26,12 +26,15 @@ impl yew::Component for RootLayout {
     fn create(_: &Context<Self>) -> Self {
         let title = "暴虐仙女的个人小站".to_string();
         spawn_local(async move {
-            net::http::Request::get("http://127.0.0.1/webtitle")
+            let title = net::http::Request::get("http://127.0.0.1/webtitle")
                 .send()
                 .await
+                .unwrap()
+                .text()
+                .await
                 .unwrap();
+            utils::document().set_title(title.as_str());
         });
-        utils::document().set_title(title.as_str());
         Self { title }
     }
 
