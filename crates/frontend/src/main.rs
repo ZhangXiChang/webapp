@@ -16,15 +16,12 @@ fn HTMLBody() -> Html {
 }
 #[derive(Properties, PartialEq)]
 pub struct RootLayoutProperties;
-pub struct RootLayout {
-    pub title: String,
-}
+pub struct RootLayout;
 impl yew::Component for RootLayout {
     type Message = ();
     type Properties = RootLayoutProperties;
 
     fn create(_: &Context<Self>) -> Self {
-        let title = "暴虐仙女的个人小站".to_string();
         spawn_local(async move {
             let title = net::http::Request::get("http://127.0.0.1/webtitle")
                 .send()
@@ -35,7 +32,7 @@ impl yew::Component for RootLayout {
                 .unwrap();
             utils::document().set_title(title.as_str());
         });
-        Self { title }
+        Self
     }
 
     fn view(&self, _: &Context<Self>) -> Html {
@@ -46,7 +43,7 @@ impl yew::Component for RootLayout {
                     <img class="absolute -left-3 h-24 w-24 rounded-full shadow-2xl"
                         src="http://q.qlogo.cn/headimg_dl?dst_uin=3066907854&spec=640&img_type=jpg"/>
                     <div class="flex flex-row space-x-1 py-5 pl-24">
-                        <span class="text-2xl font-black text-violet-400">{self.title.to_string()}</span>
+                        <span class="text-2xl font-black text-violet-400">{utils::document().title()}</span>
                     </div>
                 </div>
             </div>
