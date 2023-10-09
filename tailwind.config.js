@@ -2,7 +2,7 @@
 module.exports = {
     content: [
         './crates/frontend/src/**/*.rs',
-        './html/index.html'
+        './index.html'
     ],
     theme: {
         extend: {},

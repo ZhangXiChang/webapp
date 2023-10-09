@@ -1,7 +1,7 @@
 # An example Trunk.toml with all possible fields along with their defaults.
 [build]
 # The index HTML file to drive the bundling process.
-target = "./html/index.html"
+target = "./index.html"
 # Build in release mode.
 release = false
 # The output dir for all final assets.
