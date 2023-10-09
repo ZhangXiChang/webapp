@@ -22,5 +22,5 @@ async fn webtitle() -> impl Responder {
 }
 #[get("/webicon")]
 async fn webicon() -> impl Responder {
-    HttpResponse::Ok()
+    HttpResponse::Ok().body("")
 }
