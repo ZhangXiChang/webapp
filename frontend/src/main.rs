@@ -22,16 +22,6 @@ impl yew::Component for RootLayout {
     type Properties = RootLayoutProperties;
 
     fn create(_: &Context<Self>) -> Self {
-        spawn_local(async move {
-            let title = net::http::Request::get("http://127.0.0.1/webtitle")
-                .send()
-                .await
-                .unwrap()
-                .text()
-                .await
-                .unwrap();
-            utils::document().set_title(title.as_str());
-        });
         Self
     }
 
@@ -43,11 +33,31 @@ impl yew::Component for RootLayout {
                     <img class="absolute -left-3 h-24 w-24 rounded-full shadow-2xl"
                         src="http://q.qlogo.cn/headimg_dl?dst_uin=3066907854&spec=640&img_type=jpg"/>
                     <div class="flex flex-row space-x-1 py-5 pl-24">
-                        <span class="text-2xl font-black text-violet-400">{utils::document().title()}</span>
+                        <span id="title" class="text-2xl font-black text-violet-400"></span>
                     </div>
                 </div>
             </div>
             </>
+        }
+    }
+
+    fn rendered(&mut self, _: &Context<Self>, first_render: bool) {
+        if first_render {
+            spawn_local(async move {
+                let title = net::http::Request::get("/webtitle")
+                    .send()
+                    .await
+                    .unwrap()
+                    .text()
+                    .await
+                    .unwrap();
+                utils::document().set_title(title.as_str());
+                utils::document()
+                    .query_selector("#title")
+                    .unwrap()
+                    .unwrap()
+                    .set_inner_html(title.as_str());
+            });
         }
     }
 }

@@ -1,10 +1,17 @@
 use actix_files::*;
 use actix_web::*;
+use sqlx::postgres::*;
 
 #[main]
-async fn main() -> Result<()> {
-    let httpserver = HttpServer::new(|| {
+async fn main() -> Result<(), sqlx::Error> {
+    let pool = PgPoolOptions::new()
+        .connect("postgres://beigua:123456@localhost/webapp")
+        .await?;
+
+    let pooldata = web::Data::new(pool);
+    let httpserver = HttpServer::new(move || {
         App::new()
+            .app_data(pooldata.clone())
             .service(webtitle)
             .service(webicon)
             .service(Files::new("/", "./dist").index_file("index.html"))
@@ -17,8 +24,13 @@ async fn main() -> Result<()> {
 }
 
 #[get("/webtitle")]
-async fn webtitle() -> impl Responder {
-    HttpResponse::Ok().body("暴虐仙女的个人小站")
+async fn webtitle(pooldata: web::Data<sqlx::Pool<Postgres>>) -> impl Responder {
+    let webtitle: (String,) =
+        sqlx::query_as("SELECT app_name FROM app_name_history ORDER BY id DESC")
+            .fetch_one(pooldata.as_ref())
+            .await
+            .unwrap();
+    HttpResponse::Ok().body(webtitle.0)
 }
 #[get("/webicon")]
 async fn webicon() -> impl Responder {
