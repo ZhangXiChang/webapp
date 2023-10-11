@@ -17,7 +17,7 @@ async fn main() -> Result<(), sqlx::Error> {
     })
     .bind("0.0.0.0:80")?
     .run();
-    println!("Web application link: http://127.0.0.1");
+    println!("Server started successfully!");
     httpserver.await?;
     Ok(())
 }
