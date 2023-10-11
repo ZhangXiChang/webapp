@@ -11,10 +11,12 @@ gloo = "0.10.0"
 yew = { version = "0.21.0", features = ["csr"] }
 wasm-bindgen-futures = "0.4.37"
 #后端
-actix-web = "4.4.0"
+actix-web = { version = "4.4.0", features = ["rustls-0_21"] }
 actix-files = "0.6.2"
 sqlx = { version = "0.7.2", features = [
     "runtime-tokio",
     "tls-rustls",
     "postgres",
 ] }
+rustls = "0.21.7"
+rustls-pemfile = "1.0.3"

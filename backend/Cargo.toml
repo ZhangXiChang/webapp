@@ -7,3 +7,5 @@ edition.workspace = true
 actix-web.workspace = true
 actix-files.workspace = true
 sqlx.workspace = true
+rustls.workspace = true
+rustls-pemfile.workspace = true
