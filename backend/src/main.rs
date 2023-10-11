@@ -4,8 +4,19 @@ use sqlx::postgres::*;
 
 #[main]
 async fn main() -> Result<(), sqlx::Error> {
+    println!("user name:");
+    let mut user = String::new();
+    std::io::stdin().read_line(&mut user).unwrap();
+    println!("password:");
+    let mut password = String::new();
+    std::io::stdin().read_line(&mut password).unwrap();
+    println!("database:");
+    let mut database = String::new();
+    std::io::stdin().read_line(&mut database).unwrap();
+    println!("Starting the server...");
+
     let pool = PgPoolOptions::new()
-        .connect("postgres://postgres:123456@localhost/webapp")
+        .connect(format!("postgres://{}:{}@localhost/{}", user, password, database).as_str())
         .await?;
 
     let httpserver = HttpServer::new(move || {
