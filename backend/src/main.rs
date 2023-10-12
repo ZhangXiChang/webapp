@@ -1,6 +1,7 @@
 use actix_files::*;
 use actix_web::*;
 use rustls::*;
+use rustls_pemfile::*;
 use sqlx::postgres::*;
 use std::*;
 
@@ -21,7 +22,12 @@ async fn main() -> Result<(), sqlx::Error> {
     .await?;
 
     //创建tls
-    let tls = create_tls();
+    let result: (String, String) =
+        sqlx::query_as("SELECT certs,key FROM certificates ORDER BY id DESC")
+            .fetch_one(&pool)
+            .await
+            .unwrap();
+    let tls = create_tls(result.0, result.1);
 
     //创建HTTPS服务器
     let httpserver = HttpServer::new(move || {
@@ -44,13 +50,8 @@ struct DatabaseInfo {
     password: String,
     database: String,
 }
-struct TlsInfo {
-    cert_file_path: String,
-    key_file_path: String,
-}
 struct Information {
     databaseinfo: DatabaseInfo,
-    tlsinfo: TlsInfo,
 }
 fn information_gathering() -> Information {
     println!("IP address:");
@@ -65,12 +66,6 @@ fn information_gathering() -> Information {
     println!("database:");
     let mut database = String::new();
     std::io::stdin().read_line(&mut database).unwrap();
-    println!("cert file path:");
-    let mut cert_file_path = String::new();
-    std::io::stdin().read_line(&mut cert_file_path).unwrap();
-    println!("key file path:");
-    let mut key_file_path = String::new();
-    std::io::stdin().read_line(&mut key_file_path).unwrap();
 
     let databaseinfo = DatabaseInfo {
         address,
@@ -78,14 +73,7 @@ fn information_gathering() -> Information {
         password,
         database,
     };
-    let tlsinfo = TlsInfo {
-        cert_file_path,
-        key_file_path,
-    };
-    Information {
-        databaseinfo,
-        tlsinfo,
-    }
+    Information { databaseinfo }
 }
 
 async fn connect_database(
@@ -105,15 +93,30 @@ async fn connect_database(
         .await
 }
 
-fn create_tls(cert_src: Vec<Vec<u8>>, key_src: Vec<Vec<u8>>) -> ServerConfig {
+fn create_tls(cert_str: String, key_str: String) -> ServerConfig {
     let tlsconfig = ServerConfig::builder()
         .with_safe_defaults()
         .with_no_client_auth();
 
-    let cert = cert_src.into_iter().map(Certificate).collect();
-    let mut key: Vec<PrivateKey> = key_src.into_iter().map(PrivateKey).collect();
+    let cert_chain = certs(&mut io::BufReader::new(io::Cursor::new(cert_str)))
+        .unwrap()
+        .into_iter()
+        .map(Certificate)
+        .collect();
+    let mut keys: Vec<PrivateKey> =
+        rsa_private_keys(&mut io::BufReader::new(io::Cursor::new(key_str)))
+            .unwrap()
+            .into_iter()
+            .map(PrivateKey)
+            .collect();
+    if keys.is_empty() {
+        eprintln!("The RSA private key cannot be found.");
+        std::process::exit(1);
+    }
 
-    tlsconfig.with_single_cert(cert, key.remove(0)).unwrap()
+    tlsconfig
+        .with_single_cert(cert_chain, keys.remove(0))
+        .unwrap()
 }
 
 #[get("/api/get_app_name")]
