@@ -1,7 +1,6 @@
 use actix_files::*;
 use actix_web::*;
 use rustls::*;
-use rustls_pemfile::*;
 use sqlx::postgres::*;
 use std::*;
 
@@ -21,8 +20,8 @@ async fn main() -> Result<(), sqlx::Error> {
     )
     .await?;
 
-    //获取tls
-    let tls = get_tls(info.tlsinfo.cert_file_path, info.tlsinfo.key_file_path);
+    //创建tls
+    let tls = create_tls();
 
     //创建HTTPS服务器
     let httpserver = HttpServer::new(move || {
@@ -106,31 +105,15 @@ async fn connect_database(
         .await
 }
 
-fn get_tls(cert_file_path: String, key_file_path: String) -> ServerConfig {
+fn create_tls(cert_src: Vec<Vec<u8>>, key_src: Vec<Vec<u8>>) -> ServerConfig {
     let tlsconfig = ServerConfig::builder()
         .with_safe_defaults()
         .with_no_client_auth();
 
-    let cert_file = &mut io::BufReader::new(fs::File::open(cert_file_path).unwrap());
-    let key_file = &mut io::BufReader::new(fs::File::open(key_file_path).unwrap());
+    let cert = cert_src.into_iter().map(Certificate).collect();
+    let mut key: Vec<PrivateKey> = key_src.into_iter().map(PrivateKey).collect();
 
-    let cert_chain = certs(cert_file)
-        .unwrap()
-        .into_iter()
-        .map(Certificate)
-        .collect();
-    let mut keys: Vec<PrivateKey> = pkcs8_private_keys(key_file)
-        .unwrap()
-        .into_iter()
-        .map(PrivateKey)
-        .collect();
-    if keys.is_empty() {
-        eprintln!("Could not locate PKCS 8 private keys.");
-        std::process::exit(1);
-    }
-    tlsconfig
-        .with_single_cert(cert_chain, keys.remove(0))
-        .unwrap()
+    tlsconfig.with_single_cert(cert, key.remove(0)).unwrap()
 }
 
 #[get("/api/get_app_name")]
