@@ -23,7 +23,7 @@ async fn main() -> Result<(), sqlx::Error> {
 
     //创建tls
     let result: (String, String) =
-        sqlx::query_as("SELECT certs,key FROM certificates ORDER BY id DESC")
+        sqlx::query_as("SELECT public_key,private_key FROM app_keys ORDER BY id DESC")
             .fetch_one(&pool)
             .await
             .unwrap();
